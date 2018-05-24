@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	
+	
+	
+
+    <context:annotation-config />
+	<context:component-scan base-package="cn.lovepi.service" />
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="${jdbc.url}"></property>
+		<property name="driverClass" value="${jdbc.driver}"></property>
+		<property name="user" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.password}"></property>
+	</bean>
+
+
+	<!--=================配置和MyBatis的整合============== -->
+	<bean id="SqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 配置MyBatis全局配置文件的位置 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 指定Mybatis全局配置文件的位置 -->
+		<property name="configLocation" value="classpath:mybatis/SqlMapConfig.xml"></property>
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<!--使用下面的方式配置参数，一行配置一个 -->
+						<value>
+							offsetAsPageNum=true
+							rowBoundsWithCount=true
+							pageSizeZero=true
+							reasonable=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描所有dao接口的实现，加入到ioc容器中  -->
+		<property name="basePackage" value="cn.lovepi.mapper"/>
+		<property name="SqlSessionFactoryBeanName" value="SqlSessionFactory"></property>
+	</bean>
+
+	<!--&lt;!&ndash;事物 &ndash;&gt;-->
+	<!--<bean id="txManager"-->
+		  <!--class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+		<!--<property name="dataSource" ref="dataSource"></property>-->
+	<!--</bean>-->
+
+	<!--&lt;!&ndash; 配置拦截service &ndash;&gt;-->
+	<!--<aop:config>-->
+		<!--<aop:pointcut expression="execution(* cn.lovepi.service..*(..))" id="txPoint"/>-->
+		<!--<aop:advisor advice-ref="txAdvice" pointcut-ref="txPoint"/>-->
+	<!--</aop:config>-->
+
+	<!--&lt;!&ndash; 配置事物增强,事物如何切入&ndash;&gt;-->
+	<!--<tx:advice id="txAdvice" transaction-manager="txManager">-->
+		<!--<tx:attributes>-->
+			<!--&lt;!&ndash; 所有方法都是事物方法 &ndash;&gt;-->
+			<!--<tx:method name="*"/>-->
+			<!--&lt;!&ndash; 以get开始的所有方法 &ndash;&gt;-->
+			<!--<tx:method name="get*" read-only="true"/>-->
+		<!--</tx:attributes>-->
+	<!--</tx:advice>-->
+	
+
+
+</beans>

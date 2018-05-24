@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.lovepi.mapper.OrderMapper">
+    <cache/>
+
+    <select id="getOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM orders
+    </select>
+
+    <insert id="addOrder" parameterType="cn.lovepi.pojo.Order">
+      INSERT INTO orders (orderid, ordertime,
+          orderprice, orderuser, orderdescribe)
+      VALUES (#{orderid}, #{ordertime}, #{orderprice},
+          #{orderuser}, #{orderdescribe})
+    </insert>
+
+    <delete id="deleteOrder" parameterType="java.lang.String">
+        DELETE FROM ORDERS
+        WHERE orderid=#{orderid}
+    </delete>
+
+    <update id="updateOrder" parameterType="cn.lovepi.pojo.Order">
+        UPDATE orders
+        SET ordertime=#{ordertime}, orderprice=#{orderprice}
+            , orderuser=#{orderuser}, orderdescribe=#{orderdescribe}
+        WHERE orderid=#{orderid}
+    </update>
+    
+    <select id="selectOrderByPage" resultType="cn.lovepi.pojo.Order">
+        SELECT * FROM orders
+        <!-- 添加了pagehelper插件
+        <if test="rows != null and page != null">
+        JOIN (SELECT orderid
+        FROM orders
+        ORDER BY orderid desc
+        LIMIT #{rows}, 1) AS o2
+        WHERE o1.orderid &lt;= o2.orderid
+        ORDER BY o1.orderid desc LIMIT #{page}
+        </if>-->
+    </select>
+
+    <select id="selectAllOrder" resultType="cn.lovepi.pojo.Order">
+        SELECT * FROM orders
+    </select>
+
+    <select id="conditionSelectOrder" parameterType="java.util.Map"
+            resultType="cn.lovepi.pojo.Order">
+        SELECT * FROM orders
+        <where>
+            <if test="ordertime != null">
+                AND ordertime &gt; #{ordertime}
+            </if>
+
+            <if test="orderprice != null and orderprice != 0">
+                AND orderprice &gt; #{orderprice}
+            </if>
+
+            <if test="orderuser != null">
+                AND  orderuser = #{orderuser}
+            </if>
+
+            <if test="orderdescribe != null">
+                AND orderdescribe LIKE '%' + #{orderdescribe} + '%'
+            </if>
+
+            <if test="orderidList != null and orderidList.size() != 0">
+                <foreach item="item" index="index" collection="orderidList"
+                         open="AND orderid IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+    </select>
+
+
+
+</mapper>
