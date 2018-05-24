@@ -9,11 +9,11 @@ public interface OrderMapper {
 
     Integer getOrderCount();
 
-    void addOrder(Order order);
+    int addOrder(Order order);
 
-    boolean deleteOrder(String orderid);
+    void deleteOrder(List<String> orders);
 
-    void updateOrder(Order order);
+    int updateOrder(Order order);
 
     List<Order> selectOrderByPage();
 

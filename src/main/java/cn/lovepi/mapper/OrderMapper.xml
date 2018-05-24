@@ -16,9 +16,14 @@
           #{orderuser}, #{orderdescribe})
     </insert>
 
-    <delete id="deleteOrder" parameterType="java.lang.String">
+    <delete id="deleteOrder" parameterType="java.util.ArrayList">
         DELETE FROM ORDERS
-        WHERE orderid=#{orderid}
+        <where>
+                <foreach item="item" index="index" collection="list"
+                         open="orderid IN (" close=")" separator=",">
+                    #{item}
+                </foreach>
+        </where>
     </delete>
 
     <update id="updateOrder" parameterType="cn.lovepi.pojo.Order">
@@ -74,6 +79,16 @@
 
         </where>
     </select>
+
+    <!--<select id="selectOrder" parameterType="java.util.ArrayList"-->
+            <!--resultType="cn.lovepi.pojo.Order">-->
+        <!--select * FROM orders-->
+        <!--<if test="someorder != null and someorder.size() != 0">-->
+            <!--<foreach item="items" index="index" collection="someorder"-->
+                     <!--open="WHERE orderid IN (" separator="," close=")"></foreach>-->
+            <!--#{items}-->
+        <!--</if>-->
+    <!--</select>-->
 
 
 

@@ -8,6 +8,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,18 +43,62 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void addOrder(Order order) {
-        orderMapper.addOrder(order);
+    public boolean addOrder(Order order) {
+
+        Map<String, Object> map = new HashMap<>();
+        List<String> orderid = new ArrayList<>();
+        orderid.add(order.getOrderid());
+        map.put("orderidList", orderid);
+        boolean state = false;
+        if(orderMapper.conditionSelectOrder(map).size() != 1) {
+            state = true;
+        }
+        if(state) {
+            orderMapper.addOrder(order);
+        }
+        return state;
     }
 
     @Override
-    public boolean deleteOrder(String orderid) {
-        return orderMapper.deleteOrder(orderid);
+    public boolean deleteOrder(List<String> orders) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderidList",orders);
+        boolean state = false;
+        if(orderMapper.conditionSelectOrder(map).size() == orders.size()) {
+            state = true;
+            System.out.println("false");
+        }
+        if(state) {
+            orderMapper.deleteOrder(orders);
+            System.out.println("true");
+        }
+        return state;
     }
 
     @Override
-    public void updateOrder(Order order) {
-        orderMapper.updateOrder(order);
+    public boolean updateOrder(Order order) {
+        Map<String, Object> map = new HashMap<>();
+        List<String> orderid = new ArrayList<>();
+        orderid.add(order.getOrderid());
+        map.put("orderidList", orderid);
+        boolean state = false;
+        if(orderMapper.conditionSelectOrder(map).size() == 1) {
+            state = true;
+            System.out.println("不存在");
+        }
+        if(state) {
+            int result = orderMapper.updateOrder(order);
+            state = false;
+            if(result == 1) {
+                state = true;
+            }
+        }
+        return state;
+    }
+
+    @Override
+    public List<Order> conditionOrderQuery(Map<String, Object> map) {
+        return orderMapper.conditionSelectOrder(map);
     }
 
 

@@ -13,10 +13,13 @@ public interface OrderService {
 
     Integer OrderCountQuery();
 
-    void addOrder(Order order);
+    boolean addOrder(Order order);
 
-    boolean deleteOrder(String orderid);
+    boolean deleteOrder(List<String> orders);
 
-    void updateOrder(Order order);
+    boolean updateOrder(Order order);
+
+    List<Order> conditionOrderQuery(Map<String, Object> map);
+
 
 }

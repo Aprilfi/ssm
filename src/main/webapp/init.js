@@ -1,5 +1,5 @@
 function initTable(url,searchArgs) {
-    $('#test-table').bootstrapTable({
+    $('#table').bootstrapTable({
         method: 'post',
         toolbar: '#toolbar',    //工具按钮用哪个容器
         striped: true,      //是否显示行间隔色
